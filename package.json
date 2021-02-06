@@ -11,9 +11,11 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "express": "^4.17.1",
     "fullcalendar": "^5.5.1",
+    "knex": "^0.21.17",
     "mysql": "^2.18.1",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "restify": "^8.5.1",
+    "restify-errors": "^8.0.2"
   }
 }
