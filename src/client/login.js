@@ -1,7 +1,16 @@
 document.addEventListener('DOMContentLoaded', function () {
     const btnLogin = document.getElementById("btnLogin")
 
-    btnLogin.addEventListener('click', function () {
+    const btnNewUser = document.getElementById('btnNewUser')
+    
+
+    btnNewUser.addEventListener('click', () => {
+        const modalNewUser = new bootstrap.Modal(document.getElementById('modalNewUser'))
+        modalNewUser.show()
+
+    })
+
+    btnLogin.addEventListener('click',  () => {
         const username = document.getElementById("inputUser")
         const password = document.getElementById("inputPassword")
 

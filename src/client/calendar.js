@@ -2,11 +2,14 @@
 
 document.addEventListener('DOMContentLoaded', function () {
   const calendarEl = document.getElementById('calendar');
+  const modalDetails = new bootstrap.Modal(document.getElementById('modalDetails'))
   
   checkAccess()
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
     locale: 'pt-br',
+    themeSystem: 'bootstrap',
+    bootstrapFontAwesome: false,
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
@@ -28,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     },
     eventClick: function (arg) {
-      const modalDetails = new bootstrap.Modal(document.getElementById('modalDetails'))
+      
       const descriptionDetail = document.getElementById('descriptionDetail')
       const startDetail = document.getElementById('startDetail')
       const endDetail = document.getElementById('endDetail')
@@ -49,20 +52,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   const btnEditEvent = document.getElementById("btnEditEvent")
+  const detailEvent = document.getElementById("detailEvent")
+  const editEvent = document.getElementById("editEvent")
   btnEditEvent.addEventListener('click',function(){
-    document.getElementById("detailEvent").style.display = "none";
-    document.getElementById("editEvent").style.display = "block";
+    detailEvent.style.display = "none";
+    editEvent.style.display = "block";
   
   })
 
-  const modalDetails = new bootstrap.Modal(document.getElementById('modalDetails'))
-  const btnCancelEditEvent = document.getElementById("btnCancelEditEvent")
-  btnCancelEditEvent.addEventListener('click',function(){
-    
-    document.getElementById("editEvent").style.display = "none";
-    document.getElementById("detailEvent").style.display = "block";
-    modalDetails.show()
   
+  const btnCancelEditEvent = document.getElementById("btnCancelEditEvent")
+  btnCancelEditEvent.addEventListener('click',function(){  
+    editEvent.style.display = "none";
+    detailEvent.style.display = "block";
   })
 
   
@@ -74,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const acesso = localStorage.getItem("acesso")=="true"
     console.log(acesso)
     if(!localStorage.getItem("acesso")){
-      window.location.href = "index.html"
+      window.location = "index.html"
     }
   
   }
