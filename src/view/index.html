@@ -6,52 +6,28 @@
 
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href='https://cdn.jsdelivr.net/npm/bootswatch@4.6.0/dist/cosmo/bootstrap.min.css' rel='stylesheet' />
   <link href='style.css' rel='stylesheet' />
 
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>  
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"
+    integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js"
+    integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous">
+  </script>
   <script src="../client/login.js"></script>
   <title>Login</title>
 </head>
 
 <body>
-  <div class="modal fade" id="modalNewUser" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Novo Usuário</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="newUser">
-            <div class="row mb-3">
 
-              <label for="inputUser" class="col-sm-2 col-form-label">Usuario:</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control" id="inputUser">
-              </div>
-            </div>
-
-            <div class="row mb-3">
-
-              <label for="inputPassword" class="col-sm-2 col-form-label">Senha:</label>
-              <div class="col-sm-10">
-                <input type="password" class="form-control" id="inputPassword">
-              </div>
-            </div>
-
-
-            <button type="submit" id="saveUser" value="saveUser" class="btn btn-success">Salvar</button>
-
-          </form>
-
-        </div>
-      </div>
-    </div>
-  </div>
 
   <h1>Calendário de Eventos</h1>
+
+  
+
   <div class="container login">
+   
     <form class="px-4 py-3">
       <div class="mb-3">
         <label for="inputUser" class="form-label">Usuário:</label>
@@ -61,12 +37,47 @@
         <label for="inputPassword" class="form-label">Senha:</label>
         <input type="password" class="form-control" id="inputPassword" placeholder="Senha">
       </div>
-      <button type="submit" id="btnLogin" class="btn btn-primary" id="btnLogin">Entrar</button>
-      <button type="button" id="btnNewUser" class="btn btn-primary" id="btnNewUser" >Cadastrar</button>
+      <button type="button" id="btnLogin" class="btn btn-primary" >Entrar</button>
+      <button type="button" id="btnNewUser" class="btn btn-primary" >Cadastrar</button>
     </form>
   </div>
 
- 
+  <div class="modal fade" id="modalNewUser" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Novo Usuário</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="message"></div>
+          <form id="newUser">
+            <div class="row mb-3">
+
+              <label for="inputUserModal" class="col-sm-2 col-form-label">Usuario:</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputUserModal">
+              </div>
+            </div>
+
+            <div class="row mb-3">
+
+              <label for="inputPasswordModal" class="col-sm-2 col-form-label">Senha:</label>
+              <div class="col-sm-10">
+                <input type="password" class="form-control" id="inputPasswordModal">
+              </div>
+            </div>
+
+
+            <button type="submit" id="btnSaveUser"  class="btn btn-success"  data-bs-dismiss="alert" >Salvar</button>
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
 
 </body>
 

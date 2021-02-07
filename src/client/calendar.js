@@ -1,9 +1,7 @@
-
-
 document.addEventListener('DOMContentLoaded', function () {
   const calendarEl = document.getElementById('calendar');
   const modalDetails = new bootstrap.Modal(document.getElementById('modalDetails'))
-  
+
   checkAccess()
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -31,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     },
     eventClick: function (arg) {
-      
+
       const descriptionDetail = document.getElementById('descriptionDetail')
       const startDetail = document.getElementById('startDetail')
       const endDetail = document.getElementById('endDetail')
@@ -54,35 +52,30 @@ document.addEventListener('DOMContentLoaded', function () {
   const btnEditEvent = document.getElementById("btnEditEvent")
   const detailEvent = document.getElementById("detailEvent")
   const editEvent = document.getElementById("editEvent")
-  btnEditEvent.addEventListener('click',function(){
+  btnEditEvent.addEventListener('click', function () {
     detailEvent.style.display = "none";
     editEvent.style.display = "block";
-  
+
   })
 
-  
+
   const btnCancelEditEvent = document.getElementById("btnCancelEditEvent")
-  btnCancelEditEvent.addEventListener('click',function(){  
+  btnCancelEditEvent.addEventListener('click', function () {
     editEvent.style.display = "none";
     detailEvent.style.display = "block";
   })
 
-  
+
 
   calendar.render();
 
 
-  function checkAccess(){
-    const acesso = localStorage.getItem("acesso")=="true"
-    console.log(acesso)
-    if(!localStorage.getItem("acesso")){
+  function checkAccess() {
+    if (!localStorage.getItem("id")) {
       window.location = "index.html"
     }
-  
+
   }
 
-  
+
 })
-
-
-

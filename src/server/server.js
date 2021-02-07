@@ -1,4 +1,5 @@
 const restify = require('restify');
+const corsMiddleware = require('restify-cors-middleware')
 const errs = require('restify-errors')
 
 const server = restify.createServer({
@@ -16,9 +17,16 @@ const knex = require('knex')({
     }
   });
 
+  const cors = corsMiddleware({  
+    origins: ["*"]
+});
+
 server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
+
+server.pre(cors.preflight);  
+server.use(cors.actual);  
 
 server.get('/echo/:name', function (req, res, next) {
   res.send(req.params);
