@@ -1,8 +1,31 @@
 document.addEventListener('DOMContentLoaded', function () {
   const calendarEl = document.getElementById('calendar');
   const modalDetails = new bootstrap.Modal(document.getElementById('modalDetails'))
+  const btnEditEvent = document.getElementById("btnEditEvent")
+  const detailEvent = document.getElementById("detailEvent")
+  const editEvent = document.getElementById("editEvent")
+  const btnCancelEditEvent = document.getElementById("btnCancelEditEvent")
+  const btnSaveEvent = document.getElementById("btnSaveEvent")
+  const inputId = document.getElementById("inputId")
+  const inputDescription = document.getElementById("inputDescription")
+  const inputColor = document.getElementById("inputColor")
+  const inputStart = document.getElementById("inputStart")
+  const inputEnd = document.getElementById("inputEnd")
+  const messageNewEvent = document.getElementById("messageNewEvent")
+
+  let events = []
+  fetch('http://localhost:8080/list-events')
+    .then(response => response.json())
+    .then(data => {
+      events = data
+    })
+    .catch(error => console.error(error))
 
   checkAccess()
+
+
+
+  console.log(events)
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
     locale: 'pt-br',
@@ -22,8 +45,9 @@ document.addEventListener('DOMContentLoaded', function () {
       const inputStart = document.getElementById('inputStart')
       const modalNewEvent = new bootstrap.Modal(document.getElementById('modalNewEvent'))
 
-      inputEnd.value = arg.end.toLocaleString()
-      inputStart.value = arg.start.toLocaleString()
+
+      inputEnd.value = arg.endStr + 'T00:00'
+      inputStart.value = arg.startStr + 'T00:00'
 
       modalNewEvent.show()
 
@@ -42,40 +66,65 @@ document.addEventListener('DOMContentLoaded', function () {
     },
     editable: true,
     dayMaxEvents: true,
-    events: [{
-      title: 'Evento',
-      start: '2021-02-09'
-    }]
+    events: events
   })
+  calendar.render()
 
 
-  const btnEditEvent = document.getElementById("btnEditEvent")
-  const detailEvent = document.getElementById("detailEvent")
-  const editEvent = document.getElementById("editEvent")
-  btnEditEvent.addEventListener('click', function () {
+
+  btnEditEvent.addEventListener('click', _ => {
     detailEvent.style.display = "none";
     editEvent.style.display = "block";
 
   })
 
 
-  const btnCancelEditEvent = document.getElementById("btnCancelEditEvent")
-  btnCancelEditEvent.addEventListener('click', function () {
+
+  btnCancelEditEvent.addEventListener('click', _ => {
     editEvent.style.display = "none";
     detailEvent.style.display = "block";
   })
 
+  btnSaveEvent.addEventListener('click', () => {
 
-
-  calendar.render();
-
-
-  function checkAccess() {
-    if (!localStorage.getItem("id")) {
-      window.location = "index.html"
+    console.log(inputStart.value)
+    const event = {
+      DESCRIPTION_EVENT: inputDescription.value,
+      COLOR: inputColor.value,
+      START_EVENT: inputStart.value + ':00',
+      END_EVENT: inputEnd.value + ':00',
+      ID_USER: localStorage.getItem("id")
     }
 
-  }
+    console.log(event)
+
+    request('POST', 'http://localhost:8080/new-event', event)
+      .then(data => console.log(data))
+      .catch(error => console.error(error))
+      messageNewEvent.innerHTML = `<div class="alert alert-success alert-dismissible fade show" role="alert">Evento cadastrado com sucesso!<button type="button" class="close" data-dismiss="alert" aria-label="Close"></button></div>`
+
+  })
+
+
 
 
 })
+
+function checkAccess() {
+  if (!localStorage.getItem("id")) {
+    window.location = "index.html"
+  }
+
+}
+
+function request(method, url, data) {
+  return fetch(url, {
+      credentials: 'same-origin',
+      method: method,
+      body: JSON.stringify(data),
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      }),
+    })
+    .then(response => response.json())
+}

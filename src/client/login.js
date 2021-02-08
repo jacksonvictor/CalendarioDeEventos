@@ -33,8 +33,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         })
 
-
-
     })
 
     btnSaveUser.addEventListener('click', () => {

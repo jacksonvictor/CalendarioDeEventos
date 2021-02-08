@@ -17,8 +17,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js"></script>
 
-
-
     <title>Calendário de Eventos</title>
 
 </head>
@@ -40,6 +38,9 @@
                     <div id="messageDetail"></div>
                     <div id="detailEvent">
                         <dl class="row">
+                            <dt class="col-sm-3">Código:</dt>
+                            <dd class="col-sm-9" id="idDetail"></dd>
+
                             <dt class="col-sm-3">Descrição:</dt>
                             <dd class="col-sm-9" id="descriptionDetail"></dd>
 
@@ -57,17 +58,19 @@
 
                     <div id="editEvent">
                         <form id="editEventForm">
+                            <input type="hidden" id="editId">
+
                             <div class="row mb-3">
-                                <label for="inputDescription" class="col-sm-2 col-form-label">Descrição:</label>
+                                <label for="editDescription" class="col-sm-2 col-form-label">Descrição:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="inputDescription">
+                                    <input type="text" class="form-control" id="editDescription">
                                 </div>
                             </div>
 
                             <div class="row mb-3">
-                                <label for="color" class="col-sm-2 col-form-label">Cor:</label>
+                                <label for="editColor" class="col-sm-2 col-form-label">Cor:</label>
                                 <div class="col-sm-10">
-                                    <select name="color" class="form-control" id="color">
+                                    <select name="color" class="form-control" id="editColor">
                                         <option style="color:#0071c5;" value="#0071c5">Azul Turquesa</option>
                                         <option style="color:#FFD700;" value="#FFD700">Amarelo</option>
                                         <option style="color:#FF4500;" value="#FF4500">Laranja</option>
@@ -83,16 +86,16 @@
                             </div>
 
                             <div class="row mb-3">
-                                <label for="inputStart" class="col-sm-2 col-form-label">Início do Evento:</label>
+                                <label for="editStart" class="col-sm-2 col-form-label">Início do Evento:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="inputStart">
+                                    <input type="datetime-local" class="form-control" id="editStart">
                                 </div>
                             </div>
 
                             <div class="row mb-3">
-                                <label for="inputEnd" class="col-sm-2 col-form-label">Fim do Evento:</label>
+                                <label for="editEnd" class="col-sm-2 col-form-label">Fim do Evento:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="inputEnd">
+                                    <input type="datetime-local" class="form-control" id="editEnd">
                                 </div>
                             </div>
                             
@@ -118,7 +121,8 @@
                 </div>
                 <div class="modal-body">
                     <div id="messageNewEvent"></div>
-                    <form id="newEvent" method="POST">
+                    <form id="newEvent">
+                        <input type="hidden" id="inputId">
                         <div class="row mb-3">
                             <label for="inputDescription" class="col-sm-2 col-form-label">Descrição:</label>
                             <div class="col-sm-10">
@@ -127,9 +131,9 @@
                         </div>
 
                         <div class="row mb-3">
-                            <label for="color" class="col-sm-2 col-form-label">Cor:</label>
+                            <label for="inputColor" class="col-sm-2 col-form-label">Cor:</label>
                             <div class="col-sm-10">
-                                <select name="color" class="form-control" id="color">
+                                <select name="color" class="form-control" id="inputColor">
                                     <option style="color:#0071c5;" value="#0071c5">Azul Turquesa</option>
                                     <option style="color:#FFD700;" value="#FFD700">Amarelo</option>
                                     <option style="color:#FF4500;" value="#FF4500">Laranja</option>
@@ -147,18 +151,17 @@
                         <div class="row mb-3">
                             <label for="inputStart" class="col-sm-2 col-form-label">Início do Evento:</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="inputStart">
+                                <input  type="datetime-local" class="form-control" id="inputStart">
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <label for="inputEnd" class="col-sm-2 col-form-label">Fim do Evento:</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="inputEnd">
+                                <input type="datetime-local" class="form-control" id="inputEnd">
                             </div>
                         </div>
-                        <button type="submit" name="saveEvent" id="saveEvent" value="saveEvent"
-                            class="btn btn-success">Salvar</button>
+                        <button type="button"  id="btnSaveEvent" class="btn btn-success">Salvar</button>
                     </form>
 
                 </div>
