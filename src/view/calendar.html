@@ -6,6 +6,7 @@
 
     <link href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.css' rel='stylesheet' />
     <link href='https://cdn.jsdelivr.net/npm/bootswatch@4.6.0/dist/cosmo/bootstrap.min.css' rel='stylesheet' />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
     <link href='../../lib/main.min.css' rel='stylesheet' />
     <link href='style.css' rel='stylesheet' />
 
@@ -14,6 +15,7 @@
     <script src='../../lib/main.min.js'></script>
     <script src='../../lib/pt-br.js'></script>
     <script src='../client/calendar.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js"></script>
 
@@ -38,8 +40,7 @@
                     <div id="messageDetail"></div>
                     <div id="detailEvent">
                         <dl class="row">
-                            <dt class="col-sm-3">Código:</dt>
-                            <dd class="col-sm-9" id="idDetail"></dd>
+                            <input type="hidden"  id="idDetail"></input>
 
                             <dt class="col-sm-3">Descrição:</dt>
                             <dd class="col-sm-9" id="descriptionDetail"></dd>
@@ -61,6 +62,7 @@
                             <input type="hidden" id="editId">
 
                             <div class="row mb-3">
+                                
                                 <label for="editDescription" class="col-sm-2 col-form-label">Descrição:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="editDescription">
@@ -99,6 +101,7 @@
                                 </div>
                             </div>
                             
+                            <button type="button"  id="btnSaveEditEvent" class="btn btn-success">Salvar</button>
 
                             <button type="button" class="btn btn-primary" id="btnCancelEditEvent">Cancelar</button>
                         </form>

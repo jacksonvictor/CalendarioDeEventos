@@ -4,15 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const btnLogin = document.getElementById("btnLogin")
     const btnSaveUser = document.getElementById("btnSaveUser")
     const btnNewUser = document.getElementById('btnNewUser')
-    let users = []
-    fetch('http://localhost:8080/')
-        .then(response => response.json())
 
-        .then(data => {
-
-            users = data
-
-        })
 
 
     btnNewUser.addEventListener('click', () => {
@@ -25,13 +17,20 @@ document.addEventListener('DOMContentLoaded', function () {
         const username = document.getElementById("inputUser")
         const password = document.getElementById("inputPassword")
 
-        users.forEach(user => {
-            if (username.value === user.USERNAME && password.value === user.PASS) {
-                localStorage.setItem("id", user.ID)
+        fetch('http://localhost:3000/users')
+            .then(response => response.json())
 
-                window.location.href = "./calendar.html"
-            }
-        })
+            .then(users => {
+                users.forEach(user => {
+                    console.log(user.USERNAME)
+                    if (username.value === user.USERNAME && password.value === user.PASS) {
+                        localStorage.setItem("id", user.ID)
+
+                        window.location.href = "./calendar.html"
+                    }
+                })
+            })
+
 
     })
 
@@ -39,26 +38,32 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const USERNAME = document.getElementById("inputUserModal")
         const PASS = document.getElementById("inputPasswordModal")
-        const message = document.getElementById("message")
 
-        let userExistent = users.filter(u =>u.USERNAME === USERNAME.value)
+        fetch('http://localhost:3000/users')
+            .then(response => response.json())
 
-        if(userExistent.length === 0){
-            const user = {
-                USERNAME: USERNAME.value,
-                PASS: PASS.value
-            }
-    
-            request('POST', 'http://localhost:8080/new-user', user)
-                .then(data => console.log(data))
-                .catch(error => console.error(error))
-    
-            message.innerHTML = `<div class="alert alert-success alert-dismissible fade show" role="alert">Usuário cadastrado com sucesso!<button type="button" class="close" data-dismiss="alert" aria-label="Close"></button></div>`
-        }else{
-            message.innerHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert">Usuário já cadastrado!<button type="button" class="close" data-dismiss="alert" aria-label="Close"></div>`
+            .then(users => {
+                let userExistent = users.filter(u => u.USERNAME === USERNAME.value)
 
-        }
-        
+                if (userExistent.length === 0) {
+                    const user = {
+                        USERNAME: USERNAME.value,
+                        PASS: PASS.value
+                    }
+
+                    request('POST', 'http://localhost:3000/users', user)
+                        .then(data => console.log(data))
+                        .catch(error => console.error(error))
+
+                    alertify.success('Usuário Cadastrado com sucesso')
+                } else {
+                    alertify.error('Usuário já cadastrado!')
+
+                }
+            })
+
+
+
 
     })
 
