@@ -24,6 +24,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const btnSaveEditEvent = document.getElementById("btnSaveEditEvent")
   const mdNewEvent = document.getElementById("modalNewEvent")
   const btnDeleteEvent = document.getElementById("btnDeleteEvent")
+  const modalNewEvent = new bootstrap.Modal(mdNewEvent)
+
 
   checkAccess()
 
@@ -31,14 +33,14 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(response => response.json())
 
     .then(data => {
-      const events = data.map(evento => {
+      const events = data.map(event => {
         return {
-          id: evento.ID,
-          title: evento.DESCRIPTION_EVENT,
-          start: evento.START_EVENT,
-          end: evento.END_EVENT,
-          color: evento.COLOR,
-          id_user: evento.ID_USER
+          id: event.ID,
+          title: event.DESCRIPTION_EVENT,
+          start: event.START_EVENT,
+          end: event.END_EVENT,
+          color: event.COLOR,
+          id_user: event.ID_USER
         }
       })
 
@@ -48,19 +50,20 @@ document.addEventListener('DOMContentLoaded', function () {
         locale: 'pt-br',
         themeSystem: 'bootstrap',
         bootstrapFontAwesome: false,
+        navLinks: true,
+        selectable: true,
+        selectMirror: true,
+        eventLimit: true,
+        editable: true,
+        dayMaxEvents: true,
+        events: events,
         headerToolbar: {
           left: 'prev,next today',
           center: 'title',
           right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
-        navLinks: true, // can click day/week names to navigate views
-        selectable: true,
-        selectMirror: true,
-        eventLimit: true,
+
         select: arg => {
-
-          modalNewEvent = new bootstrap.Modal(mdNewEvent)
-
 
           inputDescription.value = ""
           inputColor.value = "#0071c5"
@@ -81,8 +84,6 @@ document.addEventListener('DOMContentLoaded', function () {
           startDetail.textContent = arg.event.start.toLocaleString()
           endDetail.textContent = arg.event.end.toLocaleString()
 
-          console.log("start " + start.substr(0, start.length - 9))
-
           editId.value = arg.event.id
           editDescription.value = arg.event.title
           editColor.value = arg.event.backgroundColor
@@ -91,9 +92,43 @@ document.addEventListener('DOMContentLoaded', function () {
 
           modalDetails.show()
         },
-        editable: true,
-        dayMaxEvents: true,
-        events: events
+        eventDrop: arg => {
+
+          const start = arg.event.startStr.replace('T', ' ')
+          const end = arg.event.endStr.replace('T', ' ')
+          const event = {
+            DESCRIPTION_EVENT: arg.event.title,
+            COLOR: arg.event.color,
+            START_EVENT: start.substr(0, start.length - 6),
+            END_EVENT: end.substr(0, start.length - 6),
+            ID_USER: localStorage.getItem("id")
+          }
+
+
+
+          request('GET', 'http://localhost:3000/events/' + localStorage.getItem("id"))
+            .then(data => {
+              let conflict = 0
+              data.forEach(i => {
+                if (dateConflits(new Date(i.START_EVENT), new Date(i.END_EVENT), new Date(arg.event.startStr.substr(0, start.length - 6)), new Date(arg.event.endStr.substr(0, start.length - 6)))) {
+                  conflict++
+                }
+              })
+
+              if (conflict > 0) {
+                alertify.error('Você ja possui um evento nesse periodo!')
+              } else {
+
+                request('PATCH', 'http://localhost:3000/events/' + arg.event.id, event)
+                  .then(data => console.log(data))
+                  .catch(error => console.error(error))
+
+              }
+            })
+            .catch(error => console.error(error))
+
+
+        }
       })
 
       calendar.render()
@@ -124,13 +159,29 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    request('POST', 'http://localhost:3000/events', event)
-      .then(data => console.log(data))
-      .catch(error => console.error(error))
 
-    
-    alertify.success('Evento Cadastrado com Sucesso!')
-    modalNewEvent.hide()
+    request('GET', 'http://localhost:3000/events/' + localStorage.getItem("id"))
+      .then(data => {
+        let conflict = 0
+        data.forEach(i => {
+          if (dateConflits(new Date(i.START_EVENT), new Date(i.END_EVENT), new Date(event.START_EVENT), new Date(event.END_EVENT))) {
+            conflict++
+          }
+        })
+
+        if (conflict > 0) {
+          alertify.error('Você ja possui um evento nesse periodo!')
+        } else {
+          request('POST', 'http://localhost:3000/events', event)
+            .then(dt => {
+              alertify.success('Evento Cadastrado com Sucesso!')
+              modalNewEvent.hide()
+            })
+            .catch(error => console.error(error))
+
+        }
+      })
+      .catch(error => console.error(error))
 
 
   })
@@ -144,13 +195,32 @@ document.addEventListener('DOMContentLoaded', function () {
       ID_USER: localStorage.getItem("id")
     }
 
-    request('PATCH', 'http://localhost:3000/events/' + editId.value, event)
-      .then(data => console.log(data))
+    request('GET', 'http://localhost:3000/events/' + localStorage.getItem("id"))
+      .then(data => {
+        let conflict = 0
+        data.forEach(i => {
+          if (dateConflits(new Date(i.START_EVENT), new Date(i.END_EVENT), new Date(event.START_EVENT), new Date(event.END_EVENT))) {
+            conflict++
+          }
+        })
+
+        if (conflict > 0) {
+          alertify.error('Você ja possui um evento nesse periodo!')
+        } else {
+
+
+          request('PATCH', 'http://localhost:3000/events/' + editId.value, event)
+            .then(data => console.log(data))
+            .catch(error => console.error(error))
+
+          alertify.success('Evento Alterado com Sucesso!')
+          modalDetails.hide();
+
+        }
+      })
       .catch(error => console.error(error))
 
-    alertify.success('Evento Alterado com Sucesso!')
 
-    loadCalendar()
 
   })
 
@@ -176,8 +246,6 @@ document.addEventListener('DOMContentLoaded', function () {
         modalDetails.show()
       })
 
-
-
     loadCalendar()
 
   })
@@ -185,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   mdDetails.addEventListener('hidden.bs.modal', _ => loadCalendar())
 
-  modalNewEvent.addEventListener('hidden.bs.modal', _ => loadCalendar())
+  mdNewEvent.addEventListener('hidden.bs.modal', _ => loadCalendar())
 
 
   function request(method, url, data) {
@@ -201,6 +269,11 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
 })
+
+function dateConflits(start1, end1, start2, end2) {
+  return (start1.getTime() === start2.getTime() || end1.getTime() === end2.getTime() || (start1.getTime() < end2.getTime() && start1.getTime() > start2.getTime()) || (start2.getTime() < end1.getTime() && start2.getTime() > start1.getTime()) || (end1.getTime() < end2.getTime() && end1.getTime() > start2.getTime()) || (end2.getTime() < end1.getTime() && end2.getTime() > start1.getTime())) ? true : false
+
+}
 
 
 

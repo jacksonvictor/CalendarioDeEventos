@@ -22,11 +22,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
             .then(users => {
                 users.forEach(user => {
-                    console.log(user.USERNAME)
                     if (username.value === user.USERNAME && password.value === user.PASS) {
                         localStorage.setItem("id", user.ID)
 
                         window.location.href = "./calendar.html"
+                    }else{
+                        alertify.error('Usuário e/ou Senha Incorretos!')
                     }
                 })
             })
