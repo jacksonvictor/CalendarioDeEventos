@@ -7,7 +7,7 @@ Essas instruções vão deixar uma cópia funcional do projeto em sua máquina l
 
 * [Git](https://git-scm.com/book/pt-br/v2/Come%C3%A7ando-Instalando-o-Git)
 * [MySQL](https://dev.mysql.com/downloads/mysql/)
-* [Nodejs e NPM](https://nodejs.org/)
+* [Nodejs && NPM](https://nodejs.org/)
 
 
 ## Clonando
