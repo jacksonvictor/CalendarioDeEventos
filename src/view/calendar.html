@@ -6,7 +6,7 @@
 
     <link href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.css' rel='stylesheet' />
     <link href='https://cdn.jsdelivr.net/npm/bootswatch@4.6.0/dist/cosmo/bootstrap.min.css' rel='stylesheet' />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css" />
     <link href='../../lib/main.min.css' rel='stylesheet' />
     <link href='style.css' rel='stylesheet' />
 
@@ -24,7 +24,12 @@
 </head>
 
 <body>
+
     <h1>Calendário de Eventos</h1>
+    <button type="button" class="btn btn-link" id="btnLogout">Deslogar</button>
+
+
+
     <div id='calendar'></div>
 
 
@@ -40,7 +45,7 @@
                     <div id="messageDetail"></div>
                     <div id="detailEvent">
                         <dl class="row">
-                            <input type="hidden"  id="idDetail"></input>
+                            <input type="hidden" id="idDetail"></input>
 
                             <dt class="col-sm-3">Descrição:</dt>
                             <dd class="col-sm-9" id="descriptionDetail"></dd>
@@ -62,7 +67,7 @@
                             <input type="hidden" id="editId">
 
                             <div class="row mb-3">
-                                
+
                                 <label for="editDescription" class="col-sm-2 col-form-label">Descrição:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="editDescription">
@@ -100,8 +105,8 @@
                                     <input type="datetime-local" class="form-control" id="editEnd">
                                 </div>
                             </div>
-                            
-                            <button type="button"  id="btnSaveEditEvent" class="btn btn-success">Salvar</button>
+
+                            <button type="button" id="btnSaveEditEvent" class="btn btn-success">Salvar</button>
 
                             <button type="button" class="btn btn-primary" id="btnCancelEditEvent">Cancelar</button>
                         </form>
@@ -115,7 +120,8 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalNewEvent" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static" aria-hidden="true">
+    <div class="modal fade" id="modalNewEvent" tabindex="-1" aria-labelledby="exampleModalLabel"
+        data-bs-backdrop="static" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -154,7 +160,7 @@
                         <div class="row mb-3">
                             <label for="inputStart" class="col-sm-2 col-form-label">Início do Evento:</label>
                             <div class="col-sm-10">
-                                <input  type="datetime-local" class="form-control" id="inputStart">
+                                <input type="datetime-local" class="form-control" id="inputStart">
                             </div>
                         </div>
 
@@ -164,7 +170,7 @@
                                 <input type="datetime-local" class="form-control" id="inputEnd">
                             </div>
                         </div>
-                        <button type="button"  id="btnSaveEvent" class="btn btn-success">Salvar</button>
+                        <button type="button" id="btnSaveEvent" class="btn btn-success">Salvar</button>
                     </form>
 
                 </div>

@@ -20,5 +20,4 @@ CREATE TABLE IF NOT EXISTS EVENTS (
   PRIMARY KEY (ID)
 );
 
-insert into events (DESCRIPTION_EVENT,COLOR,START_EVENT,END_EVENT,ID_USER)  values ("teste","#0071c5",STR_TO_DATE( "10/02/2021 10:00:00", "%d/%m/%Y %H:%i:%s" ),STR_TO_DATE( "01/05/2014 11:00:00", "%m/%d/%Y %H:%i:%s" ),1);
 

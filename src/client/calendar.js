@@ -25,8 +25,10 @@ document.addEventListener('DOMContentLoaded', function () {
   const mdNewEvent = document.getElementById("modalNewEvent")
   const btnDeleteEvent = document.getElementById("btnDeleteEvent")
   const modalNewEvent = new bootstrap.Modal(mdNewEvent)
+  const btnLogout = document.getElementById("btnLogout")
 
 
+ 
   checkAccess()
 
   const loadCalendar = _ => fetch('http://localhost:3000/events/' + localStorage.getItem("id"))
@@ -58,9 +60,13 @@ document.addEventListener('DOMContentLoaded', function () {
         dayMaxEvents: true,
         events: events,
         headerToolbar: {
-          left: 'prev,next today',
+          left: 'prev today next',
           center: 'title',
           right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        buttonicons: {
+          prev: 'fa-angle-left',
+          next: 'fa-chevron-right'
         },
 
         select: arg => {
@@ -117,6 +123,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
               if (conflict > 0) {
                 alertify.error('Você ja possui um evento nesse periodo!')
+                arg.event.setDates(arg.oldEvent.start,arg.oldEvent.end)
               } else {
 
                 request('PATCH', 'http://localhost:3000/events/' + arg.event.id, event)
@@ -247,6 +254,15 @@ document.addEventListener('DOMContentLoaded', function () {
       })
 
     loadCalendar()
+
+  })
+
+  btnLogout.addEventListener('click', _ => {
+    alertify.confirm("Você tem certeza que quer deslogar?.",
+      _ => {
+        localStorage.clear()
+        window.location = "index.html"
+      })
 
   })
 
