@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
 
+    alertify.set('notifier','position', 'top-right');
 
     const btnLogin = document.getElementById("btnLogin")
     const btnSaveUser = document.getElementById("btnSaveUser")
@@ -16,22 +17,27 @@ document.addEventListener('DOMContentLoaded', function () {
     btnLogin.addEventListener('click', () => {
         const username = document.getElementById("inputUser")
         const password = document.getElementById("inputPassword")
-        console.log(username.value)
 
 
         fetch('http://localhost:3000/users')
             .then(response => response.json())
 
             .then(users => {
+                let login = 0
+                let id = null
                 users.forEach(user => {
                     if (username.value === user.USERNAME && password.value === user.PASS) {
-                        localStorage.setItem("id", user.ID)
-
-                        window.location.href = "./calendar.html"
-                    } else {
-                        alertify.error('Usuário e/ou Senha Incorretos!')
+                        login++
+                        id = user.ID
                     }
                 })
+
+                if (login > 0){
+                    localStorage.setItem("id", id)
+                    window.location.href = "./calendar.html"
+                } else {
+                    alertify.error('Usuário e/ou Senha Incorretos!')
+                }
             })
 
 

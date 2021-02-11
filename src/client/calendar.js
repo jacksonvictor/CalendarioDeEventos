@@ -27,8 +27,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const modalNewEvent = new bootstrap.Modal(mdNewEvent)
   const btnLogout = document.getElementById("btnLogout")
 
+  alertify.set('notifier', 'position', 'top-center')
 
- 
+
   checkAccess()
 
   const loadCalendar = _ => fetch('http://localhost:3000/events/' + localStorage.getItem("id"))
@@ -70,14 +71,24 @@ document.addEventListener('DOMContentLoaded', function () {
         },
 
         select: arg => {
+          let today = new Date()
+          today.setHours(0)
+          today.setMinutes(0)
+          today.setSeconds(0)
+          today.setMilliseconds(0)
 
 
-          inputDescription.value = ""
-          inputColor.value = "#0071c5"
-          inputEnd.value = arg.endStr + 'T00:00'
-          inputStart.value = arg.startStr + 'T00:00'
+          if (arg.start.getTime() < today) {
+            alertify.warning('Não é possível criar um evento no passado!')
+          } else {
+            inputDescription.value = ""
+            inputColor.value = "#0071c5"
+            inputEnd.value = arg.endStr + 'T00:00'
+            inputStart.value = arg.startStr + 'T00:00'
 
-          modalNewEvent.show()
+            modalNewEvent.show()
+
+          }
 
         },
         eventClick: arg => {
@@ -124,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
               if (conflict > 0) {
                 alertify.error('Você ja possui um evento nesse periodo!')
-                arg.event.setDates(arg.oldEvent.start,arg.oldEvent.end)
+                arg.event.setDates(arg.oldEvent.start, arg.oldEvent.end)
               } else {
 
                 request('PATCH', 'http://localhost:3000/events/' + arg.event.id, event)
@@ -166,32 +177,34 @@ document.addEventListener('DOMContentLoaded', function () {
       ID_USER: localStorage.getItem("id")
     }
 
-    if(event.DESCRIPTION_EVENT === ""){
+
+
+    if (event.DESCRIPTION_EVENT === "") {
       alertify.error('Coloque uma descrição para o evento!')
 
-    }else{
+    } else {
       request('GET', 'http://localhost:3000/events/' + localStorage.getItem("id"))
-      .then(data => {
-        let conflict = 0
-        data.forEach(i => {
-          if (dateConflits(new Date(i.START_EVENT), new Date(i.END_EVENT), new Date(event.START_EVENT), new Date(event.END_EVENT))) {
-            conflict++
+        .then(data => {
+          let conflict = 0
+          data.forEach(i => {
+            if (dateConflits(new Date(i.START_EVENT), new Date(i.END_EVENT), new Date(event.START_EVENT), new Date(event.END_EVENT))) {
+              conflict++
+            }
+          })
+
+          if (conflict > 0) {
+            alertify.error('Você ja possui um evento nesse periodo!')
+          } else {
+            request('POST', 'http://localhost:3000/events', event)
+              .then(dt => {
+                alertify.success('Evento Cadastrado com Sucesso!')
+                modalNewEvent.hide()
+              })
+              .catch(error => console.error(error))
+
           }
         })
-
-        if (conflict > 0) {
-          alertify.error('Você ja possui um evento nesse periodo!')
-        } else {
-          request('POST', 'http://localhost:3000/events', event)
-            .then(dt => {
-              alertify.success('Evento Cadastrado com Sucesso!')
-              modalNewEvent.hide()
-            })
-            .catch(error => console.error(error))
-
-        }
-      })
-      .catch(error => console.error(error))
+        .catch(error => console.error(error))
     }
 
   })
@@ -205,37 +218,39 @@ document.addEventListener('DOMContentLoaded', function () {
       ID_USER: localStorage.getItem("id")
     }
 
-    if(event.DESCRIPTION_EVENT === ""){
+    if (editDescription.value === "") {
       alertify.error('Coloque uma descrição para o evento!')
 
-    }else{
+    } else {
       request('GET', 'http://localhost:3000/events/' + localStorage.getItem("id"))
-      .then(data => {
-        let conflict = 0
-        data.forEach(i => {
-          if (dateConflits(new Date(i.START_EVENT), new Date(i.END_EVENT), new Date(event.START_EVENT), new Date(event.END_EVENT))) {
-            conflict++
+        .then(data => {
+          let conflict = 0
+
+          data.forEach(i => {
+
+            if (i.ID !== parseInt(editId.value, 10) && dateConflits(new Date(i.START_EVENT), new Date(i.END_EVENT), new Date(event.START_EVENT), new Date(event.END_EVENT))) {
+              conflict++
+            }
+          })
+
+          if (conflict > 0) {
+            alertify.error('Você ja possui um evento nesse periodo!')
+          } else {
+
+
+            request('PATCH', 'http://localhost:3000/events/' + editId.value, event)
+              .then(data => console.log(data))
+              .catch(error => console.error(error))
+
+            alertify.success('Evento Alterado com Sucesso!')
+            modalDetails.hide();
+
           }
         })
-
-        if (conflict > 0) {
-          alertify.error('Você ja possui um evento nesse periodo!')
-        } else {
-
-
-          request('PATCH', 'http://localhost:3000/events/' + editId.value, event)
-            .then(data => console.log(data))
-            .catch(error => console.error(error))
-
-          alertify.success('Evento Alterado com Sucesso!')
-          modalDetails.hide();
-
-        }
-      })
-      .catch(error => console.error(error))
+        .catch(error => console.error(error))
     }
 
-    
+
 
 
 
@@ -254,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(data => console.log(data))
       .catch(error => console.error(error))
 
-    alertify.confirm("Confirmação","Você tem certeza que quer apagar este evento?.",
+    alertify.confirm("Confirmação", "Você tem certeza que quer apagar este evento?.",
       _ => {
         alertify.success('Evento Apagado com Sucesso!')
         modalDetails.hide()
@@ -268,19 +283,30 @@ document.addEventListener('DOMContentLoaded', function () {
   })
 
   btnLogout.addEventListener('click', _ => {
-    alertify.confirm('Confirmação','Você tem certeza que quer deslogar?.',
+    alertify.confirm('Confirmação', 'Você tem certeza que quer deslogar?.',
       _ => {
         localStorage.clear()
         window.location = "index.html"
       },
-      _ =>{})
+      _ => {})
 
   })
 
 
   mdDetails.addEventListener('hidden.bs.modal', _ => loadCalendar())
+  mdDetails.addEventListener('show.bs.modal', _ => {
+      const today = new Date().toISOString().substr(0,new Date().toISOString().length - 8)
+      endDetail.min = today
+      startDetail.min = today
+  })
 
   mdNewEvent.addEventListener('hidden.bs.modal', _ => loadCalendar())
+  mdNewEvent.addEventListener('show.bs.modal', _ => {
+    const today = new Date().toISOString().substr(0,new Date().toISOString().length - 8)
+    inputStart.min = today
+    inputEnd.min = today
+
+  })
 
 
   function request(method, url, data) {
