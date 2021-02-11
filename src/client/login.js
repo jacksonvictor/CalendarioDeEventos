@@ -16,6 +16,8 @@ document.addEventListener('DOMContentLoaded', function () {
     btnLogin.addEventListener('click', () => {
         const username = document.getElementById("inputUser")
         const password = document.getElementById("inputPassword")
+        console.log(username.value)
+
 
         fetch('http://localhost:3000/users')
             .then(response => response.json())
@@ -26,11 +28,14 @@ document.addEventListener('DOMContentLoaded', function () {
                         localStorage.setItem("id", user.ID)
 
                         window.location.href = "./calendar.html"
-                    }else{
+                    } else {
                         alertify.error('Usuário e/ou Senha Incorretos!')
                     }
                 })
             })
+
+
+
 
 
     })
@@ -40,30 +45,33 @@ document.addEventListener('DOMContentLoaded', function () {
         const USERNAME = document.getElementById("inputUserModal")
         const PASS = document.getElementById("inputPasswordModal")
 
-        fetch('http://localhost:3000/users')
-            .then(response => response.json())
+        if (USERNAME.value === "" || PASS.value === "") {
+            alertify.error('Todos os campos são obrigatórios!')
 
-            .then(users => {
-                let userExistent = users.filter(u => u.USERNAME === USERNAME.value)
+        } else {
+            fetch('http://localhost:3000/users')
+                .then(response => response.json())
 
-                if (userExistent.length === 0) {
-                    const user = {
-                        USERNAME: USERNAME.value,
-                        PASS: PASS.value
+                .then(users => {
+                    let userExistent = users.filter(u => u.USERNAME === USERNAME.value)
+
+                    if (userExistent.length === 0) {
+                        const user = {
+                            USERNAME: USERNAME.value,
+                            PASS: PASS.value
+                        }
+
+                        request('POST', 'http://localhost:3000/users', user)
+                            .then(data => console.log(data))
+                            .catch(error => console.error(error))
+
+                        alertify.success('Usuário Cadastrado com sucesso')
+                    } else {
+                        alertify.error('Usuário já cadastrado!')
+
                     }
-
-                    request('POST', 'http://localhost:3000/users', user)
-                        .then(data => console.log(data))
-                        .catch(error => console.error(error))
-
-                    alertify.success('Usuário Cadastrado com sucesso')
-                } else {
-                    alertify.error('Usuário já cadastrado!')
-
-                }
-            })
-
-
+                })
+        }
 
 
     })

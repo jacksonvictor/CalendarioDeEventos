@@ -31,6 +31,12 @@ h1{
     text-align: center;
 }
 
+#btnLogout{
+    position: absolute; 
+    right: 10px; 
+    top: 10px;
+}
+
 #header{
     align-self: center;
 

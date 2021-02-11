@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
         dayMaxEvents: true,
         events: events,
         headerToolbar: {
-          left: 'prev today next',
+          left: 'prev,next today',
           center: 'title',
           right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
 
         select: arg => {
+
 
           inputDescription.value = ""
           inputColor.value = "#0071c5"
@@ -165,9 +166,11 @@ document.addEventListener('DOMContentLoaded', function () {
       ID_USER: localStorage.getItem("id")
     }
 
+    if(event.DESCRIPTION_EVENT === ""){
+      alertify.error('Coloque uma descrição para o evento!')
 
-
-    request('GET', 'http://localhost:3000/events/' + localStorage.getItem("id"))
+    }else{
+      request('GET', 'http://localhost:3000/events/' + localStorage.getItem("id"))
       .then(data => {
         let conflict = 0
         data.forEach(i => {
@@ -189,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       })
       .catch(error => console.error(error))
-
+    }
 
   })
 
@@ -202,7 +205,11 @@ document.addEventListener('DOMContentLoaded', function () {
       ID_USER: localStorage.getItem("id")
     }
 
-    request('GET', 'http://localhost:3000/events/' + localStorage.getItem("id"))
+    if(event.DESCRIPTION_EVENT === ""){
+      alertify.error('Coloque uma descrição para o evento!')
+
+    }else{
+      request('GET', 'http://localhost:3000/events/' + localStorage.getItem("id"))
       .then(data => {
         let conflict = 0
         data.forEach(i => {
@@ -226,6 +233,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       })
       .catch(error => console.error(error))
+    }
+
+    
 
 
 
@@ -244,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(data => console.log(data))
       .catch(error => console.error(error))
 
-    alertify.confirm("Você tem certeza que quer apagar este evento?.",
+    alertify.confirm("Confirmação","Você tem certeza que quer apagar este evento?.",
       _ => {
         alertify.success('Evento Apagado com Sucesso!')
         modalDetails.hide()
@@ -258,11 +268,12 @@ document.addEventListener('DOMContentLoaded', function () {
   })
 
   btnLogout.addEventListener('click', _ => {
-    alertify.confirm("Você tem certeza que quer deslogar?.",
+    alertify.confirm('Confirmação','Você tem certeza que quer deslogar?.',
       _ => {
         localStorage.clear()
         window.location = "index.html"
-      })
+      },
+      _ =>{})
 
   })
 
