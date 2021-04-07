@@ -177,12 +177,16 @@ document.addEventListener('DOMContentLoaded', function () {
       ID_USER: localStorage.getItem("id")
     }
 
+    console.log(new Date(event.START_EVENT).getTime())
+    console.log(new Date(event.END_EVENT).getTime())
 
 
     if (event.DESCRIPTION_EVENT === "") {
       alertify.error('Coloque uma descrição para o evento!')
 
-    } else {
+    } else if(new Date(event.START_EVENT).getTime() > new Date(event.END_EVENT).getTime()){
+      alertify.error('A data final deve vir depois da data inicial!')
+    }else {
       request('GET', 'http://localhost:3000/events/' + localStorage.getItem("id"))
         .then(data => {
           let conflict = 0
@@ -218,10 +222,14 @@ document.addEventListener('DOMContentLoaded', function () {
       ID_USER: localStorage.getItem("id")
     }
 
+    
+
     if (editDescription.value === "") {
       alertify.error('Coloque uma descrição para o evento!')
 
-    } else {
+    } else if(new Date(event.START_EVENT).getTime() > new Date(event.END_EVENT).getTime()){
+      alertify.error('A data final deve vir depois da data inicial!')
+    }else{
       request('GET', 'http://localhost:3000/events/' + localStorage.getItem("id"))
         .then(data => {
           let conflict = 0

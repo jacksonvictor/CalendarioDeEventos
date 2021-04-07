@@ -15,35 +15,25 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 
     btnLogin.addEventListener('click', () => {
-        const username = document.getElementById("inputUser")
-        const password = document.getElementById("inputPassword")
+        
+        const username = document.getElementById("inputUser").value
+        const pass = document.getElementById("inputPassword").value
 
+        const user = {
+            USERNAME: username,
+            PASS: pass
+        }
 
-        fetch('http://localhost:3000/users')
-            .then(response => response.json())
-
-            .then(users => {
-                let login = 0
-                let id = null
-                users.forEach(user => {
-                    if (username.value === user.USERNAME && password.value === user.PASS) {
-                        login++
-                        id = user.ID
-                    }
-                })
-
-                if (login > 0){
-                    localStorage.setItem("id", id)
+        request('POST', 'http://localhost:3000/users/search', user)
+            
+            .then(res => {
+                 if (res.status === 200){
+                    localStorage.setItem("id", res.id)
                     window.location.href = "./calendar.html"
                 } else {
                     alertify.error('Usuário e/ou Senha Incorretos!')
-                }
+                } 
             })
-
-
-
-
-
     })
 
     btnSaveUser.addEventListener('click', () => {
@@ -51,22 +41,18 @@ document.addEventListener('DOMContentLoaded', function () {
         const USERNAME = document.getElementById("inputUserModal")
         const PASS = document.getElementById("inputPasswordModal")
 
+        const user = {
+            USERNAME: USERNAME.value,
+            PASS: PASS.value
+        }
+
         if (USERNAME.value === "" || PASS.value === "") {
             alertify.error('Todos os campos são obrigatórios!')
 
         } else {
-            fetch('http://localhost:3000/users')
-                .then(response => response.json())
-
-                .then(users => {
-                    let userExistent = users.filter(u => u.USERNAME === USERNAME.value)
-
-                    if (userExistent.length === 0) {
-                        const user = {
-                            USERNAME: USERNAME.value,
-                            PASS: PASS.value
-                        }
-
+            request('POST', 'http://localhost:3000/users/search', user)
+                .then(res => {
+                    if (res.status !== 200) {
                         request('POST', 'http://localhost:3000/users', user)
                             .then(data => console.log(data))
                             .catch(error => console.error(error))
@@ -74,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         alertify.success('Usuário Cadastrado com sucesso')
                     } else {
                         alertify.error('Usuário já cadastrado!')
-
                     }
                 })
         }

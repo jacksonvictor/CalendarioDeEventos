@@ -28,6 +28,23 @@ router.post('/', (request, response, next) => {
 
 })
 
+router.post('/search', (request, response, next) => {
+    const username = request.body.USERNAME
+    const password = request.body.PASS
+     knex('USERS')
+        .where('USERNAME', username)
+        .andWhere('PASS', password)
+        .then((dados) => {
+            console.log(dados)
+            
+            if(dados.length == 0) {
+                response.send({message:'Usuário Não Encontrado!', status: 404})
+            }else{
+                response.send({message:'Usuário Encontrado!', id : dados[0].ID, status:200})
+            }
+        }, next)
+})
+
 
 
 module.exports = router;
