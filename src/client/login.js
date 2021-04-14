@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
             PASS: pass
         }
 
-        request('POST', 'http://localhost:3000/users/search', user)
+        request('POST', 'http://localhost:3000/users/login', user)
             
             .then(res => {
                  if (res.status === 200){
@@ -50,9 +50,9 @@ document.addEventListener('DOMContentLoaded', function () {
             alertify.error('Todos os campos são obrigatórios!')
 
         } else {
-            request('POST', 'http://localhost:3000/users/search', user)
+            request('POST', 'http://localhost:3000/users/searchByUser', user)
                 .then(res => {
-                    if (res.status !== 200) {
+                    if (res.status === 404) {
                         request('POST', 'http://localhost:3000/users', user)
                             .then(data => console.log(data))
                             .catch(error => console.error(error))

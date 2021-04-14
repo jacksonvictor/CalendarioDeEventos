@@ -1,5 +1,6 @@
 require('dotenv').config({ path: '../../.env' })
 const express = require('express')
+const md5 = require('md5');
 const router = express.Router()
 const knex = require('knex')({
     client: 'mysql',
@@ -20,22 +21,35 @@ router.get('/', (request, response, next) => {
 
 router.post('/', (request, response, next) => {
     knex('USERS')
-        .insert(request.body)
+        .insert({USERNAME: request.body.USERNAME, PASS: md5(request.body.PASS)})
         .then((dados) => {
             response.send(dados)
         }, next)
-
-
 })
 
-router.post('/search', (request, response, next) => {
+router.post('/login', (request, response, next) => {
     const username = request.body.USERNAME
     const password = request.body.PASS
      knex('USERS')
         .where('USERNAME', username)
-        .andWhere('PASS', password)
+        .andWhere('PASS', md5(password))
         .then((dados) => {
-            console.log(dados)
+            
+            if(dados.length == 0) {
+                response.send({message:'Usuário Não Encontrado!', status: 404})
+            }else{
+                response.send({message:'Usuário Encontrado!', id : dados[0].ID, status:200})
+            }
+        }, next)
+}) 
+
+
+
+router.post('/searchByUser', (request, response, next) => {
+    const username = request.body.USERNAME
+     knex('USERS')
+        .where('USERNAME', username)
+        .then((dados) => {
             
             if(dados.length == 0) {
                 response.send({message:'Usuário Não Encontrado!', status: 404})

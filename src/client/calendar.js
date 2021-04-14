@@ -77,15 +77,24 @@ document.addEventListener('DOMContentLoaded', function () {
           today.setSeconds(0)
           today.setMilliseconds(0)
 
+          const oneDayInMs = (24 * 60 * 60 * 1000)
+
 
           if (arg.start.getTime() < today) {
             alertify.warning('Não é possível criar um evento no passado!')
           } else {
+            const dateEnd = arg.end
+            const minutes = new Date().getMinutes().toString().length === 1 ? "0" + new Date().getMinutes() : new Date().getMinutes().toString()
+            const endhours = (new Date().getHours() + 1).toString().length === 1 ? '0' + (new Date().getHours() + 1) : (new Date().getHours() + 1).toString()
+            const starthours = (new Date().getHours()).toString().length === 1 ? '0' + new Date().getHours() : new Date().getHours().toString()
+
+            const dateEndWithoutHours = new Date(dateEnd.setTime(dateEnd.getTime() - oneDayInMs)).toISOString().substr(0, 10)
+
+
             inputDescription.value = ""
             inputColor.value = "#0071c5"
-            inputEnd.value = arg.endStr + 'T00:00'
-            inputStart.value = arg.startStr + 'T00:00'
-
+            inputEnd.value = dateEndWithoutHours + `T${endhours === '24' ? '00' : endhours}:${minutes}`
+            inputStart.value = arg.startStr + `T${starthours === '24' ? '00' : starthours}:${minutes}`
             modalNewEvent.show()
 
           }
@@ -101,7 +110,6 @@ document.addEventListener('DOMContentLoaded', function () {
           descriptionDetail.textContent = arg.event.title
           startDetail.textContent = arg.event.start.toLocaleString()
           endDetail.textContent = arg.event.end.toLocaleString()
-
           editId.value = arg.event.id
           editDescription.value = arg.event.title
           editColor.value = arg.event.backgroundColor
@@ -122,30 +130,27 @@ document.addEventListener('DOMContentLoaded', function () {
             ID_USER: localStorage.getItem("id")
           }
 
+          
+          if (new Date(event.START_EVENT).getTime() < new Date().getTime() || new Date(event.END_EVENT).getTime() < new Date().getTime()) {
+            alertify.error('Não é possível criar um evento no passado!')
+            loadCalendar()
+          } else {
 
+            request('POST', `http://localhost:3000/events/searchEvent/${event.ID_USER}`, event)
+              .then(res => {
+                if (res.status === 200) {
+                  alertify.error('Você ja possui um evento nesse periodo!')
+                  arg.event.setDates(arg.oldEvent.start, arg.oldEvent.end)
+                } else {
 
-          request('GET', 'http://localhost:3000/events/' + localStorage.getItem("id"))
-            .then(data => {
-              let conflict = 0
-              data.forEach(i => {
-                if (dateConflits(new Date(i.START_EVENT), new Date(i.END_EVENT), new Date(arg.event.startStr.substr(0, start.length - 6)), new Date(arg.event.endStr.substr(0, start.length - 6)))) {
-                  conflict++
+                  request('PATCH', 'http://localhost:3000/events/' + arg.event.id, event)
+                    .then(data => console.log(data))
+                    .catch(error => console.error(error))
+
                 }
               })
-
-              if (conflict > 0) {
-                alertify.error('Você ja possui um evento nesse periodo!')
-                arg.event.setDates(arg.oldEvent.start, arg.oldEvent.end)
-              } else {
-
-                request('PATCH', 'http://localhost:3000/events/' + arg.event.id, event)
-                  .then(data => console.log(data))
-                  .catch(error => console.error(error))
-
-              }
-            })
-            .catch(error => console.error(error))
-
+              .catch(error => console.error(error))
+          }
 
         }
       })
@@ -177,26 +182,23 @@ document.addEventListener('DOMContentLoaded', function () {
       ID_USER: localStorage.getItem("id")
     }
 
-    console.log(new Date(event.START_EVENT).getTime())
-    console.log(new Date(event.END_EVENT).getTime())
-
+    let today = new Date()
+    today.setHours(0)
+    today.setMinutes(0)
+    today.setSeconds(0)
+    today.setMilliseconds(0)
 
     if (event.DESCRIPTION_EVENT === "") {
       alertify.error('Coloque uma descrição para o evento!')
 
-    } else if(new Date(event.START_EVENT).getTime() > new Date(event.END_EVENT).getTime()){
+    } else if (new Date(event.START_EVENT).getTime() >= new Date(event.END_EVENT).getTime()) {
       alertify.error('A data final deve vir depois da data inicial!')
-    }else {
-      request('GET', 'http://localhost:3000/events/' + localStorage.getItem("id"))
-        .then(data => {
-          let conflict = 0
-          data.forEach(i => {
-            if (dateConflits(new Date(i.START_EVENT), new Date(i.END_EVENT), new Date(event.START_EVENT), new Date(event.END_EVENT))) {
-              conflict++
-            }
-          })
-
-          if (conflict > 0) {
+    } else if (new Date(event.START_EVENT).getTime() < today || new Date(event.END_EVENT).getTime() < today) {
+      alertify.error('Não é possível criar um evento no passado!')
+    } else {
+      request('POST', `http://localhost:3000/events/searchEvent/${event.ID_USER}`, event)
+        .then(res => {
+          if (res.status === 200) {
             alertify.error('Você ja possui um evento nesse periodo!')
           } else {
             request('POST', 'http://localhost:3000/events', event)
@@ -215,6 +217,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   btnSaveEditEvent.addEventListener('click', _ => {
     const event = {
+      ID: idDetail.value,
       DESCRIPTION_EVENT: editDescription.value,
       COLOR: editColor.value,
       START_EVENT: editStart.value + ':00',
@@ -222,26 +225,24 @@ document.addEventListener('DOMContentLoaded', function () {
       ID_USER: localStorage.getItem("id")
     }
 
-    
+    let today = new Date()
+    today.setHours(0)
+    today.setMinutes(0)
+    today.setSeconds(0)
+    today.setMilliseconds(0)
 
     if (editDescription.value === "") {
       alertify.error('Coloque uma descrição para o evento!')
 
-    } else if(new Date(event.START_EVENT).getTime() > new Date(event.END_EVENT).getTime()){
+    } else if (new Date(event.START_EVENT).getTime() > new Date(event.END_EVENT).getTime()) {
       alertify.error('A data final deve vir depois da data inicial!')
-    }else{
-      request('GET', 'http://localhost:3000/events/' + localStorage.getItem("id"))
-        .then(data => {
-          let conflict = 0
+    } else if (new Date(event.START_EVENT).getTime() < today || new Date(event.END_EVENT).getTime() < today) {
+      alertify.error('Não é possível criar um evento no passado!')
+    } else {
+      request('POST', `http://localhost:3000/events/searchEventEdit/${event.ID_USER}`, event)
+        .then(res => {
 
-          data.forEach(i => {
-
-            if (i.ID !== parseInt(editId.value, 10) && dateConflits(new Date(i.START_EVENT), new Date(i.END_EVENT), new Date(event.START_EVENT), new Date(event.END_EVENT))) {
-              conflict++
-            }
-          })
-
-          if (conflict > 0) {
+          if (res.status === 200) {
             alertify.error('Você ja possui um evento nesse periodo!')
           } else {
 
@@ -251,16 +252,14 @@ document.addEventListener('DOMContentLoaded', function () {
               .catch(error => console.error(error))
 
             alertify.success('Evento Alterado com Sucesso!')
-            modalDetails.hide();
+            loadCalendar()
+            modalDetails.hide()
+            window.location.reload()
 
           }
         })
         .catch(error => console.error(error))
     }
-
-
-
-
 
   })
 
@@ -303,14 +302,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
   mdDetails.addEventListener('hidden.bs.modal', _ => loadCalendar())
   mdDetails.addEventListener('show.bs.modal', _ => {
-      const today = new Date().toISOString().substr(0,new Date().toISOString().length - 8)
-      endDetail.min = today
-      startDetail.min = today
+    const today = new Date().toISOString().substr(0, new Date().toISOString().length - 8)
+    endDetail.min = today
+    startDetail.min = today
   })
 
   mdNewEvent.addEventListener('hidden.bs.modal', _ => loadCalendar())
   mdNewEvent.addEventListener('show.bs.modal', _ => {
-    const today = new Date().toISOString().substr(0,new Date().toISOString().length - 8)
+    const today = new Date().toISOString().substr(0, new Date().toISOString().length - 8)
     inputStart.min = today
     inputEnd.min = today
 
@@ -330,12 +329,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
 })
-
-function dateConflits(start1, end1, start2, end2) {
-  return (start1.getTime() === start2.getTime() || end1.getTime() === end2.getTime() || (start1.getTime() < end2.getTime() && start1.getTime() > start2.getTime()) || (start2.getTime() < end1.getTime() && start2.getTime() > start1.getTime()) || (end1.getTime() < end2.getTime() && end1.getTime() > start2.getTime()) || (end2.getTime() < end1.getTime() && end2.getTime() > start1.getTime())) ? true : false
-
-}
-
 
 
 function checkAccess() {
